@@ -57,17 +57,27 @@ France,Europe</script>
 <!--<script src="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/js/theme.min.js"></script>-->
 <script>
 var setupBlobDownload = function(blobId, linkId) {
-  var blobElm = document.getElementById(blobId);
-  var csv = blobElm.textContent;
-  var type = blobElm.getAttribute("type");
-  var blob = new Blob([csv], {type:type});
-  var url = URL.createObjectURL(blob);
-
   var link = document.getElementById(linkId);
+  var blobElm = document.getElementById(blobId);
+  var body = blobElm.textContent;
+  var type = blobElm.getAttribute("type");
+  var blob = new Blob([body], {type:type});
+
+  link._blob = blob;
   link.setAttribute("type", type);
-  link.setAttribute("target", "_blank");
-  link.setAttribute("data-gc-analytics", "manualDownload")
-  link.href = url;
+  link.setAttribute("data-gc-analytics", "manualDownload");
+
+  if (!window.navigator.msSaveBlob) {
+    link.setAttribute("target", "_blank");
+    link.href = URL.createObjectURL(blob);
+  } else {
+    link.setAttribute("target", "_parent");
+    link.href = "javascript:getMsBlob(" + linkId +")";
+  }
+}
+function getMsBlob(link) {
+  var filename = link.getAttribute("download");
+  window.navigator.msSaveBlob(link._blob, filename);
 }
 setupBlobDownload("blob", "download");
 </script>
