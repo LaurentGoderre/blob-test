@@ -67,11 +67,14 @@ var setupBlobDownload = function(blobId, linkId) {
   link.setAttribute("target", "_parent");
   link.setAttribute("type", type);
   link.setAttribute("data-gc-analytics", "manualDownload");
+  link.setAttribute("rel", "external");
 
   if (!window.navigator.msSaveBlob) {
     link.href = URL.createObjectURL(blob);
   } else {
-    link.href = "javascript:getMsBlob(" + linkId +")";
+    link.href = "about:blank";
+    link.setAttribute("target", "_blank");
+    link.setAttribute("onclick", "javascript:getMsBlob(" + linkId +")");
   }
 }
 function getMsBlob(link) {
